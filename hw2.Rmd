@@ -1,0 +1,44 @@
+---
+title: "hw_2"
+author: "Имя Отчество Фамилия"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, message=FALSE}
+library(tidyverse)
+library(lubridate)
+theme_set(theme_minimal())
+knitr::opts_chunk$set(message = FALSE)
+```
+
+## Задание 2.1
+
+В датасете `mexico_divorces_2000-2015.csv`, собранный пользователем [Anton](https://www.kaggle.com/aagghh), хранится обработаный датасет, содержащий данные о разводах в городе Халапа. Определите знак зодиака (я использовал вариант `Западная астрология (Вариант I)` из [википедии](https://ru.wikipedia.org/wiki/%D0%97%D0%BD%D0%B0%D0%BA%D0%B8_%D0%B7%D0%BE%D0%B4%D0%B8%D0%B0%D0%BA%D0%B0)) каждого участника брака и постройте график:
+
+```{r}
+dv <- read_csv("mexico_divorces_2000-2015.csv")
+
+dv %>% 
+  mutate(Marriage_duration = dmy(Divorce_date) - dmy(Date_of_marriage)) %>% 
+  select(-Divorce_date, -Date_of_marriage) %>% 
+  pivot_longer(values_to = "dob", names_to = "partner", DOB_partner_man:DOB_partner_woman) %>% 
+  mutate(horoscope_sign = case_when(
+    dob %within% interval(make_date(year = year(dob), month = 1, day = 20),
+                          make_date(year = year(dob), month = 2, day = 18)) ~ "Aquarius",
+    ...,
+    partner = str_remove(partner, ...)) %>% 
+  pivot_wider(names_from = partner, values_from = horoscope_sign, -dob) %>% 
+  mutate(man = factor(man, levels = c("Aquarius", ...)),
+         ...) %>% 
+  ...
+
+```
+
+## Задание 2.2
+
+Проанализируйте полученные результаты. Какие выводы можно сделать?
+
+* В целом, средние лежат более ли менее в одном диапазоне. Это особенно ясно видно, если добавить к `facet_grid()` аргумент `margins = TRUE`.
+* ...
